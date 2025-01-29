@@ -19,7 +19,9 @@ sudo apt-get update
 
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-sudo docker run hello-world
+sudo usermod -aG docker $USER
+
+#sudo docker run hello-world
 sudo docker version
 sudo docker compose version
 
@@ -29,7 +31,7 @@ sudo docker pull nasselle/casa-img
 
 
 # setup swap
-sudo fallocate -l 6G /swapfile
+sudo fallocate -l 2G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile
@@ -39,4 +41,4 @@ sudo sh -c 'echo "vm.swappiness=10" >> /etc/sysctl.conf'
 sudo swapon --show
 
 # reboot
-sudo reboot
+#sudo reboot

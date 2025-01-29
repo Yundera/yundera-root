@@ -18,7 +18,7 @@ nsl-router/%uid%
 
 /**
  * Checks the availability of a given domain name.
- * @param domain - The domain name to check.
+ * @param domain - The domain name to check. (just the subdomain part of the domain xxx.domain.com
  * @returns A promise that resolves to true if available, false otherwise.
  */
 async function getDomain(domain: string): Promise<{uid:string,domain:NSLRouterData}> {
@@ -53,6 +53,12 @@ export function routerAPI(expressApp: express.Application) {
       // Validate that the domain is provided
       if (!domain) {
         return res.status(400).json({ error: "Domain name is required." });
+      }
+
+
+      const reservedList = ["root","app","www"];
+      if (reservedList.includes(domain)) {
+        return res.status(209).json({ available:false, message: "Domain name is not available." });
       }
 
       // Use the getDomain function
