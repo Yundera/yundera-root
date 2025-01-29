@@ -1,11 +1,7 @@
 import express from "express";
-import admin from "firebase-admin";
-import {sign, verifySignature} from "../library/KeyLib.js";
-import {
-  NSL_ROUTER_COLLECTION,
-  NSLRouterData
-} from "../DataBaseDTO/DataBaseNSLRouter.js";
+import {verifySignature} from "../library/KeyLib.js";
 import {authenticate, AuthUserRequest} from "./ExpressAuthenticateMiddleWare.js";
+import {checkDomainAvailability, deleteUserDomain, getUserDomain, updateUserDomain} from "./Domain.js";
 
 /*
 full domain = domainName+"."+serverDomain
@@ -16,29 +12,6 @@ nsl-router/%uid%
 - publicKey:string
 */
 
-/**
- * Checks the availability of a given domain name.
- * @param domain - The domain name to check. (just the subdomain part of the domain xxx.domain.com
- * @returns A promise that resolves to true if available, false otherwise.
- */
-async function getDomain(domain: string): Promise<{uid:string,domain:NSLRouterData}> {
-  if (!domain) {
-    throw new Error("Domain name is required for availability check.");
-  }
-
-  const nslRouterCollection = admin.firestore().collection(NSL_ROUTER_COLLECTION);
-  const querySnapshot = await nslRouterCollection.where('domainName', '==', domain).get();
-
-  if(querySnapshot.empty) {
-    return null;
-  } else {
-    return {
-      uid: querySnapshot.docs[0].id,
-      domain:querySnapshot.docs[0].data() as NSLRouterData
-    };
-  }
-}
-
 export function routerAPI(expressApp: express.Application) {
   let router = express.Router();
 
@@ -48,50 +21,29 @@ export function routerAPI(expressApp: express.Application) {
    */
   router.get('/available/:domain', async (req, res) => {
     try {
-      const domain = req.params.domain.trim(); // Extract and trim domain from the route parameter
-
-      // Validate that the domain is provided
-      if (!domain) {
-        return res.status(400).json({ error: "Domain name is required." });
-      }
-
-
-      const reservedList = ["root","app","www"];
-      if (reservedList.includes(domain)) {
-        return res.status(209).json({ available:false, message: "Domain name is not available." });
-      }
-
-      // Use the getDomain function
-      const isAvailable = (await getDomain(domain)) == null;
-
-      if (isAvailable) {
-        return res.status(200).json({ available:true, message: "Domain name is available." });
-      } else {
-        return res.status(209).json({ available:false, message: "Domain name is not available." });
-      }
-    } catch (e) {
-      console.error("Error in /available/:domain:", e);
-      return res.status(500).json({ error: e.toString() });
+      const domain = req.params.domain.trim();
+      const availability = await checkDomainAvailability(domain);
+      return res.status(availability.available ? 200 : 209).json(availability);
+    } catch (error) {
+      console.error("Error in /available/:domain:", error);
+      return res.status(500).json({ error: error.toString() });
     }
   });
 
   //used by mesh router
   router.get('/verify/:userid/:sig', async (req, res) => {
-    let {userid, sig} = req.params;
+    const {userid, sig} = req.params;
     try {
-      const db = admin.firestore();
-      const usersRef = db.collection(NSL_ROUTER_COLLECTION);
-      const document = await usersRef.doc(userid).get();
-      const user = document.data() as NSLRouterData;
+      const userData = await getUserDomain(userid);
 
-      if (user) {
-        let {publicKey} = user;
-        const isValid = await verifySignature(publicKey, sig, userid)
+      if (userData) {
+        const isValid = await verifySignature(userData.publicKey, sig, userid);
         console.log('Verifying signature for', req.params, isValid);
+
         if (isValid) {
           res.json({
-            serverDomain: user.serverDomain,
-            domainName: user.domainName
+            serverDomain: userData.serverDomain,
+            domainName: userData.domainName
           });
         } else {
           res.json("" + isValid);
@@ -99,8 +51,8 @@ export function routerAPI(expressApp: express.Application) {
       } else {
         res.json({err: "unknown user"});
       }
-    } catch (e) {
-      res.json({err: e.toString()});
+    } catch (error) {
+      res.json({err: error.toString()});
     }
   });
 
@@ -109,20 +61,12 @@ export function routerAPI(expressApp: express.Application) {
    * Retrieves the domain information for the specified user.
    */
   router.get('/domain/:userid', async (req, res) => {
-    const { userid } = req.params;
-
     try {
-      if (!userid) {
-        return res.status(400).json({ error: "User ID is required." });
-      }
+      const userData = await getUserDomain(req.params.userid);
 
-      const userDoc = await admin.firestore().collection(NSL_ROUTER_COLLECTION).doc(userid).get();
-
-      if (!userDoc.exists) {
+      if (!userData) {
         return res.status(280).json({ error: "User not found." });
       }
-
-      const userData = userDoc.data() as NSLRouterData;
 
       return res.status(200).json({
         domainName: userData.domainName,
@@ -141,43 +85,14 @@ export function routerAPI(expressApp: express.Application) {
    * Requires authentication.
    */
   router.post('/domain', authenticate, async (req: AuthUserRequest, res) => {
-    const { domainName, serverDomain = "nsl.sh", publicKey, source } = req.body;
+    const { domainName, serverDomain = "nsl.sh", publicKey } = req.body;
 
     try {
-      const userid  = req.user.uid;
-      // At least one field must be present
       if (!domainName && !serverDomain && !publicKey) {
         return res.status(400).json({ error: "At least one of 'domainName', 'serverDomain', or 'publicKey' must be provided." });
       }
 
-      // 2 possibility for domain update/create
-      // 1. domain creation => domain must be available
-      // 2. domain update => domain must be owned by the user (check with uid)
-      // note that 1 user = 0-1 domain (no multiple domain per user)
-      const domain = domainName ? await getDomain(domainName) : null;
-      const isAvailable = domain == null;
-      const isOwned = domain?.uid === userid; // Using optional chaining and strict equality
-
-      if (!isAvailable && !isOwned) {
-        // If domain exists but isn't owned by the user
-        return res.status(domain ? 403 : 409).json({
-          error: domain ? "Domain name is not owned by you." : "Domain name is already in use."
-        });
-      }
-
-      const db = admin.firestore();
-      const nslRouterCollection = db.collection(NSL_ROUTER_COLLECTION);
-      const userDocRef = nslRouterCollection.doc(userid);
-
-      // Prepare the update object
-      const updateData: Partial<NSLRouterData> = {};
-      if (domainName) updateData.domainName = domainName;
-      if (serverDomain) updateData.serverDomain = serverDomain;
-      if (publicKey) updateData.publicKey = publicKey;
-
-      // Update the user's document
-      await userDocRef.set(updateData, { merge: true });
-
+      await updateUserDomain(req.user.uid, { domainName, serverDomain, publicKey });
       return res.status(200).json({ message: "Domain information updated successfully." });
     } catch (error) {
       console.error("Error in POST /domain", error);
@@ -186,23 +101,13 @@ export function routerAPI(expressApp: express.Application) {
   });
 
   router.delete('/domain', authenticate, async (req: AuthUserRequest, res) => {
-
     try {
-      const userid  = req.user.uid;
-
-      const db = admin.firestore();
-      const nslRouterCollection = db.collection(NSL_ROUTER_COLLECTION);
-      const userDocRef = nslRouterCollection.doc(userid);
-
-      // Update the user's document
-      await userDocRef.delete();
-
+      await deleteUserDomain(req.user.uid);
       return res.status(200).json({ message: "Domain information deleted successfully." });
     } catch (error) {
       console.error("Error in DELETE /domain", error);
       return res.status(500).json({ error: error.toString() });
     }
   });
-
   expressApp.use('/', router);
 }
