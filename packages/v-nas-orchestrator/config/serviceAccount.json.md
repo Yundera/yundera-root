@@ -7,5 +7,3 @@ gives a json like this dashboard-9c2ac-firebase-adminsdk-bc7yf-86797a6198.json
 rename to serviceAccount.json
 
 also create firebaseConfig
-
-don't rename ".json" otherwise it will be bundled in astro

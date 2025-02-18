@@ -6,6 +6,9 @@ RUN curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
+#same version as the one in package.json
+RUN corepack prepare pnpm@9.9.0 --activate
+
 WORKDIR /app
 COPY package.json /app
 COPY pnpm-lock.yaml /app

@@ -2,6 +2,9 @@ FROM node:lts AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
+#same version as the one in CasaOS-UI package.json
+RUN corepack prepare pnpm@9.9.0 --activate
+
 WORKDIR /app
 COPY package.json /app
 COPY pnpm-lock.yaml /app
