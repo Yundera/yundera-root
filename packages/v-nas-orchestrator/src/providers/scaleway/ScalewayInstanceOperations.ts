@@ -1,10 +1,8 @@
-import {createTmpDockerComposeFile} from "../../library/DockerComposeLib.js";
+import {createTmpDockerComposeFile, createUserPersoFile} from "../../library/DockerComposeLib.js";
 import {
   actionOnInstance,
   createInstance,
-  deleteInstance,
-  executeCommand,
-  runDockerComposeSetup, getInstances,
+  deleteInstance, getInstances, getMainInstance,
 } from "../../library/ScalewayLib.js";
 import {InstanceOperations} from "../InstanceOperations.js";
 import {deleteDomainControlKeyPair, getDomainControlKeyPair} from "../../service/KeyPairDataBase.js";
@@ -12,6 +10,7 @@ import {sign} from "../../library/KeyLib.js";
 import {domainApiClient} from "../../service/DomainAPIClient.js";
 import {sendEmail} from "../../library/Sendgrid.js";
 import {config} from "../../EnvConfig.js";
+import {sshSession} from "../../library/SSHSession.js";
 
 export class ScalewayInstanceOperations implements InstanceOperations {
   private operationPromises = new Map<string, Promise<any>>();
@@ -53,11 +52,23 @@ export class ScalewayInstanceOperations implements InstanceOperations {
       // Instance Creation
       ///////////////////////////////////
       console.log(`Creating V-NAS for ${domainData.domainName}@${domainData.serverDomain} with uid ${uid} / ${signatureUid}`);
-      const composeLocalPath = await createTmpDockerComposeFile(domainData.serverDomain, domainData.domainName, signatureUid, signature);
-
-      let instance = await createInstance(uid);
-      await runDockerComposeSetup(uid, composeLocalPath, '/pcs/compose.yml');
+      const persoFile = await createUserPersoFile(domainData.serverDomain, domainData.domainName, signatureUid, signature);
+      const remoteFolder = `/DATA/AppData/casaos/apps/yundera`;
+      await createInstance(uid);
       await this.statusInternal(uid);
+      let instance = await getMainInstance(uid);
+
+      let ip = instance.public_ip.address;
+      let sshkey = config.SSH_KEY;
+      await sshSession(ip, sshkey, 'root')
+          .connect()
+          .cmd(`mkdir -p ${remoteFolder}`)
+          .sendFile(persoFile, `${remoteFolder}/.env`)
+          .sendFile("./template/start.sh", `${remoteFolder}/start.sh`)
+          .cmd(`chmod +x ${remoteFolder}/start.sh`)
+          .sendFile("./template/compose-template.yml", `${remoteFolder}/compose-template.yml`)
+          .cmd(`cd ${remoteFolder} && ./start.sh`)
+          .dispose().await();
       return instance.id;
     });
   }
@@ -81,7 +92,10 @@ export class ScalewayInstanceOperations implements InstanceOperations {
       console.log(`Rebooting V-NAS with UID ${uid}`);
       await actionOnInstance(uid, 'reboot');
       await new Promise((resolve) => setTimeout(resolve, 20000));
-      await executeCommand(uid, 'ping -c 4 google.com');
+      let instance = await getMainInstance(uid);
+      let ip = instance.public_ip.address;
+      let sshkey = config.SSH_KEY;
+      await sshSession(ip, sshkey, 'root').connect().cmd('ping -c 4 google.com').dispose().await();
       return "done";
     });
   }

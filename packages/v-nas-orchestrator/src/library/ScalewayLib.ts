@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {config} from "../EnvConfig.js";
-import {NodeSSH} from "node-ssh";
 import {Instance} from "../providers/scaleway/ScalewayInterface.js";
 
 export async function createInstance(uid: string): Promise<Instance> {
@@ -110,22 +109,6 @@ export async function deleteInstance(uid: string): Promise<void> {
     }
 }
 
-export async function executeCommand(uid: string, command: string): Promise<void> {
-    const ssh = await sshConnect(uid);
-    try {
-        let result = await ssh.execCommand(command);
-        if (result.code !== 0) {
-            throw new Error(`stderr: ${result.stderr}`);
-        }
-    } catch (error) {
-        throw error;
-    } finally {
-        if(ssh) {
-            ssh.dispose(); // Always close the connection
-        }
-    }
-}
-
 export async function actionOnInstance(uid: string, action: 'poweron' | 'poweroff' | 'reboot' | 'terminate'): Promise<void> {
     const instances = await getInstances(uid);
     if (instances.length !== 1) {
@@ -133,32 +116,6 @@ export async function actionOnInstance(uid: string, action: 'poweron' | 'powerof
         throw new Error(`Expected 1 instance but got ${instances.length}`);
     }
     await actionOnInstanceBySid(instances[0].id, action);
-}
-
-export async function runDockerComposeSetup(uid: string, localComposePath: string, remoteComposePath: string) {
-    const ssh = await sshConnect(uid);
-    try {
-        // Use putFile to copy the file from local to remote
-        await ssh.putFile(localComposePath, remoteComposePath);
-        console.log('compose file send!');
-
-        let result = await ssh.execCommand(`docker compose -f ${remoteComposePath} pull`);
-        if (result.code !== 0) {
-            throw new Error(`stderr: ${result.stderr}`);
-        }
-        console.log('compose pull done!');
-        result = await ssh.execCommand(`docker compose -f ${remoteComposePath} up -d`);
-        if (result.code !== 0) {
-            throw new Error(`stderr: ${result.stderr}`);
-        }
-        console.log('compose up done!');
-    } catch (error) {
-        throw error;
-    } finally {
-        if(ssh) {
-            ssh.dispose(); // Always close the connection
-        }
-    }
 }
 
 export async function getInstances(uid: string,filtered:boolean = true):Promise<Instance[]> {
@@ -202,38 +159,13 @@ export async function getInstances(uid: string,filtered:boolean = true):Promise<
     return instances;
 }
 
-// Helper function to create a temporary Docker Compose file
-//@deprecated will use ssh fom the browser for end to end control of the VM
-async function sshConnect(uid: string): Promise<NodeSSH> {
+export async function getMainInstance(uid: string):Promise<Instance> {
     const instances = await getInstances(uid);
-    try {
-        if (instances.length !== 1) {
-            throw new Error(`Expected 1 instance but got ${instances.length}`);
-        }
-        const instanceIp = instances[0].public_ip.address;
-        const ssh = new NodeSSH();
-        const retries = 10;
-        for (let attempt = 1; attempt <= retries; attempt++) {
-            let delay = 1000 * attempt;
-            try {
-                await ssh.connect({
-                    host: instanceIp,
-                    username: 'root',
-                    privateKey: config.SSH_KEY,
-                });
-            } catch (error) {
-                if (attempt === retries) {
-                    throw error; // Rethrow the error if it's the last attempt
-                }
-                console.log(`Attempt ${attempt} failed. Retrying in ${delay}ms...`);
-                await new Promise(res => setTimeout(res, delay)); // Wait before retrying
-            }
-        }
-        return ssh;
-    }catch (error){
-        console.error("instances :", instances);
-        throw error;
+    if (instances.length !== 1) {
+        console.error(instances);
+        throw new Error(`Expected 1 instance but got ${instances.length}`);
     }
+    return instances[0];
 }
 
 function servername(uid: string): string {
