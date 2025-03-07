@@ -1,4 +1,4 @@
-import {createTmpDockerComposeFile, createUserPersoFile} from "../../library/DockerComposeLib.js";
+import {createUserPersoFile} from "../../library/DockerComposeLib.js";
 import {
   actionOnInstance,
   createInstance,
@@ -11,6 +11,7 @@ import {domainApiClient} from "../../service/DomainAPIClient.js";
 import {sendEmail} from "../../library/Sendgrid.js";
 import {config} from "../../EnvConfig.js";
 import {sshSession} from "../../library/SSHSession.js";
+import {generateRandomPassword} from "../../library/PasswordGenerator.js";
 
 export class ScalewayInstanceOperations implements InstanceOperations {
   private operationPromises = new Map<string, Promise<any>>();
@@ -52,7 +53,6 @@ export class ScalewayInstanceOperations implements InstanceOperations {
       // Instance Creation
       ///////////////////////////////////
       console.log(`Creating V-NAS for ${domainData.domainName}@${domainData.serverDomain} with uid ${uid} / ${signatureUid}`);
-      const persoFile = await createUserPersoFile(domainData.serverDomain, domainData.domainName, signatureUid, signature);
       const remoteFolder = `/DATA/AppData/casaos/apps/yundera`;
       await createInstance(uid);
       await this.statusInternal(uid);
@@ -60,6 +60,15 @@ export class ScalewayInstanceOperations implements InstanceOperations {
 
       let ip = instance.public_ip.address;
       let sshkey = config.SSH_KEY;
+      const persoFile = await createUserPersoFile({
+          domain:domainData.serverDomain,
+          name:domainData.domainName,
+          uid:signatureUid,
+          signature:  signature,
+          ip: ip,
+          defaultpwd: generateRandomPassword()
+        }
+      );
       await sshSession(ip, sshkey, 'root')
           .connect()
           .cmd(`mkdir -p ${remoteFolder}`)

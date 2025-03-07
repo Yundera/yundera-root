@@ -19,6 +19,8 @@ services:
     environment:
       DATA_ROOT: /DATA
       REF_DOMAIN: %DOMAIN%
+      REF_IP: %PUBLIC_IP%
+      REF_DEFAULT_PWD: %DEFAULT_PWD%
       REF_NET: pcs
       REF_PORT: "443"
       REF_SCHEME: https
