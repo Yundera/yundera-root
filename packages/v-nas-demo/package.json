@@ -1,0 +1,27 @@
+{
+  "name": "@aptero/v-nas-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "type": "module",
+  "private": false,
+  "scripts": {
+    "exec": "concurrently \"tsc && node dist\"",
+    "build": "tsc",
+    "start": "tsc-watch --onSuccess \"node ./dist\"",
+    "test": "tsc && mocha dist/**/*.spec.js",
+    "lint": "eslint src --ext ts"
+  },
+  "dependencies": {
+    "axios": "^1.8.3",
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3",
+    "typescript": "5.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.0",
+    "concurrently": "^8.2.2",
+    "tsc-watch": "^6.2.0"
+  },
+  "packageManager": "pnpm@10.6.3+sha512.bb45e34d50a9a76e858a95837301bfb6bd6d35aea2c5d52094fa497a467c43f5c440103ce2511e9e0a2f89c3d6071baac3358fc68ac6fb75e2ceb3d2736065e6"
+}

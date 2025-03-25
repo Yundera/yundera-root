@@ -2,7 +2,9 @@ import {createUserPersoFile} from "../../library/DockerComposeLib.js";
 import {
   actionOnInstance,
   createInstance,
-  deleteInstance, getInstances, getMainInstance,
+  deleteInstance,
+  getInstances,
+  getMainInstance,
 } from "../../library/ScalewayLib.js";
 import {InstanceOperations} from "../InstanceOperations.js";
 import {deleteDomainControlKeyPair, getDomainControlKeyPair} from "../../service/KeyPairDataBase.js";
@@ -12,11 +14,12 @@ import {sendEmail} from "../../library/Sendgrid.js";
 import {config} from "../../EnvConfig.js";
 import {sshSession} from "../../library/SSHSession.js";
 import {generateRandomPassword} from "../../library/PasswordGenerator.js";
+import {Options} from "./Options.js";
 
 export class ScalewayInstanceOperations implements InstanceOperations {
   private operationPromises = new Map<string, Promise<any>>();
 
-  public async setup(uid: string): Promise<string> {
+  public async setup(uid: string,options:Options = {}): Promise<string> {
     return this.withWIPProtection(uid, async () => {
 
       ///////////////////////////////////
@@ -66,7 +69,8 @@ export class ScalewayInstanceOperations implements InstanceOperations {
           uid:signatureUid,
           signature:  signature,
           ip: ip,
-          defaultpwd: generateRandomPassword()
+          defaultpwd: generateRandomPassword(12,true,true,true,false),
+          defaultUser: options?.ENVIRONMENT?.USER
         }
       );
       await sshSession(ip, sshkey, 'root')
@@ -76,6 +80,7 @@ export class ScalewayInstanceOperations implements InstanceOperations {
           .sendFile("./template/start.sh", `${remoteFolder}/start.sh`)
           .cmd(`chmod +x ${remoteFolder}/start.sh`)
           .sendFile("./template/compose-template.yml", `${remoteFolder}/compose-template.yml`)
+          .cmd(`cd ${remoteFolder} && docker compose pull`) //ensure everything is up to date for first start
           .cmd(`cd ${remoteFolder} && ./start.sh`)
           .dispose().await();
       return instance.id;

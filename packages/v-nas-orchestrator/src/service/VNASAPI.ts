@@ -41,7 +41,8 @@ export function vnasAPI(expressApp: express.Application,instanceOperations:Scale
   router.post("/create", authenticate, async (req:AuthUserRequest, res) => {
     try {
       const uid  = req.user.uid;
-      const result = await instanceOperations.setup(uid);
+      const options = req.body;
+      const result = await instanceOperations.setup(uid,options);
       res.json(result);
     } catch (e) {
       console.log(e);

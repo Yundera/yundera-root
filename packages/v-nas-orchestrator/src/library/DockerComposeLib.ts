@@ -1,5 +1,6 @@
 import {promises as fs} from "fs";
 import path from "path";
+import {Options} from "../providers/scaleway/Options.js";
 
 export async function createUserPersoFile(user: {
                                             domain: string,
@@ -7,7 +8,8 @@ export async function createUserPersoFile(user: {
                                             uid: string,
                                             signature: string,
                                             ip: string,
-                                            defaultpwd: string
+                                            defaultpwd: string,
+                                            defaultUser?:string,
                                           }
 ): Promise<string> {
   const tmpFolder = `./tmp`;
@@ -25,6 +27,7 @@ export async function createUserPersoFile(user: {
   // Replace placeholders with actual values
   let updatedComposeContent = templateContent
   .replace(/%PROVIDER_STR%/g, provider)
+      .replace(/%DEFAULT_USER%/g, user.defaultUser)
   .replace(/%UID%/g, user.uid)
   .replace(/%PUBLIC_IP%/g, user.ip)
   .replace(/%DEFAULT_PWD%/g, user.defaultpwd)

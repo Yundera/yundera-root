@@ -6,6 +6,15 @@ services:
     container_name: admin
     hostname: admin
     restart: unless-stopped
+    environment:
+      AUTHORITY_ENDPOINT: "https://8080-casaos-%DOMAIN%/v1/users"
+    volumes:
+      - type: bind
+        source: /DATA/AppData/casaos/apps/yundera/
+        target: /app/compose
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
     expose:
       - "80"
     networks:
@@ -17,13 +26,14 @@ services:
     hostname: casaos
     restart: unless-stopped
     environment:
-      DATA_ROOT: /DATA
-      REF_DOMAIN: %DOMAIN%
-      REF_IP: %PUBLIC_IP%
-      REF_DEFAULT_PWD: %DEFAULT_PWD%
-      REF_NET: pcs
+      DATA_ROOT: "/DATA"
+      REF_DOMAIN: "%DOMAIN%"
+      REF_IP: "%PUBLIC_IP%"
+      USER: "%DEFAULT_USER%"
+      REF_DEFAULT_PWD: "%DEFAULT_PWD%"
+      REF_NET: "pcs"
       REF_PORT: "443"
-      REF_SCHEME: https
+      REF_SCHEME: "https"
     networks:
       pcs: null
     volumes:
