@@ -80,7 +80,7 @@ export class ScalewayInstanceOperations implements InstanceOperations {
           .sendFile("./template/start.sh", `${remoteFolder}/start.sh`)
           .cmd(`chmod +x ${remoteFolder}/start.sh`)
           .sendFile("./template/compose-template.yml", `${remoteFolder}/compose-template.yml`)
-          .cmd(`cd ${remoteFolder} && docker compose pull`) //ensure everything is up to date for first start
+          .cmd(`docker compose -f ${remoteFolder}/compose-template.yml pull > /dev/null 2>&1`) //ensure everything is up to date for first start
           .cmd(`cd ${remoteFolder} && ./start.sh`)
           .dispose().await();
       return instance.id;
