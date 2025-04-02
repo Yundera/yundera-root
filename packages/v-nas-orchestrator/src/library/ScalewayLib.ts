@@ -161,11 +161,15 @@ export async function getInstances(uid: string,filtered:boolean = true):Promise<
 
 export async function getMainInstance(uid: string):Promise<Instance> {
     const instances = await getInstances(uid);
-    if (instances.length !== 1) {
+    if (instances.length > 1) {
         console.error(instances);
-        throw new Error(`Expected 1 instance but got ${instances.length}`);
+        throw new Error(`Expected 0-1 instance but got ${instances.length}`);
     }
-    return instances[0];
+    if (instances.length === 0) {
+        return null;
+    }else {
+        return instances[0];
+    }
 }
 
 function servername(uid: string): string {
