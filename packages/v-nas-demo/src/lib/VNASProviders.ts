@@ -20,14 +20,13 @@ const createAuthHeader = (userid: string | string[]) => {
     };
 }
 
-export async function vnasAdminAction(uid: string, action: 'delete' | 'reboot' | 'create' | 'status', options: any = {}): Promise<string> {
+export async function vnasAdminAction(uid: string, action: 'delete' | 'reboot' | 'create' | 'status', options: any = {}): Promise<any> {
     if (!action) {
         throw new Error("Action is required for VNAS action.");
     }
     try {
         const response = await apiClient.post(`/vnas/${action}`, options, {
-            headers: createAuthHeader(uid),
-            timeout: 480000, // 8 minutes in milliseconds
+            headers: createAuthHeader(uid)
         });
         if(response.status !== 200) {
             console.error(response.data);
@@ -40,3 +39,18 @@ export async function vnasAdminAction(uid: string, action: 'delete' | 'reboot' |
     }
 }
 
+// Function to check job status
+export async function vnasJobStatus(uid: string,jobId) {
+    if (!jobId) {
+        throw new Error("Job ID is required to check status.");
+    }
+    try {
+        const response = await apiClient.get(`/vnas/job/${jobId}`, {
+            headers: createAuthHeader(uid)
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error checking job status:', error);
+        throw error;
+    }
+}

@@ -28,7 +28,7 @@
     "libp2p": "^1.9.2",
     "libsodium-wrappers": "^0.7.15",
     "multiformats": "^13.2.2",
-    "node-ssh": "^13.2.0",
+    "node-ssh": "^13.2.1",
     "typescript": "5.5.4"
   },
   "devDependencies": {

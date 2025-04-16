@@ -63,8 +63,6 @@ export class ScalewayInstanceOperations implements InstanceOperations {
             if(!instance) {
                 throw new Error(`Instance not found for UID ${uid}`);
             }
-            //wait 10s for the instance to be ready
-            await new Promise((resolve) => setTimeout(resolve, 10000));
 
             let ip = instance.public_ip.address;
             let sshkey = config.SSH_KEY;
@@ -78,6 +76,10 @@ export class ScalewayInstanceOperations implements InstanceOperations {
                     defaultUser: options?.ENVIRONMENT?.USER
                 }
             );
+
+            //wait 10s for the instance to be ready
+            await new Promise((resolve) => setTimeout(resolve, 15000));
+
             await sshSession(ip, sshkey, 'root')
                 .connect()
                 .cmd(`mkdir -p ${remoteFolder}`)
