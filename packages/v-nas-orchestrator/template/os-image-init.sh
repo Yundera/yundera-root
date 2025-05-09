@@ -1,3 +1,5 @@
+#this script is the required setup for a fresh install of Ubuntu 22.04 LTS to create the yundera template
+
 sudo apt-get update
 sudo apt-get upgrade -y
 
@@ -28,10 +30,12 @@ sudo docker compose version
 # docker pull initial casaos and mesh-router
 sudo docker pull nasselle/mesh-router
 sudo docker pull nasselle/casa-img
+sudo docker pull nasselle/settings-center-app
 
 
 # setup swap
-sudo fallocate -l 2G /swapfile
+sudo swapon --show #check if swap is already setup
+sudo fallocate -l 4G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile

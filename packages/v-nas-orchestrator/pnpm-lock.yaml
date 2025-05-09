@@ -56,6 +56,9 @@ importers:
       node-ssh:
         specifier: ^13.2.1
         version: 13.2.1
+      ssh2:
+        specifier: ^1.16.0
+        version: 1.16.0
       typescript:
         specifier: 5.5.4
         version: 5.5.4
@@ -1567,8 +1570,8 @@ packages:
   split@0.3.3:
     resolution: {integrity: sha512-wD2AeVmxXRBoX44wAycgjVpMhvbwdI2aZjCkvfNcH1YqHQvJVa1duWc73OyVGJUc05fhFaTZeQ/PYsrmyH0JVA==}
 
-  ssh2@1.15.0:
-    resolution: {integrity: sha512-C0PHgX4h6lBxYx7hcXwu3QWdh4tg6tZZsTfXcdvc5caW/EMxaB4H9dWsl7qk+F7LAW762hp8VbXOX7x4xUYvEw==}
+  ssh2@1.16.0:
+    resolution: {integrity: sha512-r1X4KsBGedJqo7h8F5c4Ybpcr5RjyP+aWIG007uBPRjmdQWfEiVLzSK71Zji1B9sKxwaCvD8y8cwSkYrlLiRRg==}
     engines: {node: '>=10.16.0'}
 
   statuses@2.0.1:
@@ -3361,7 +3364,7 @@ snapshots:
       sb-promise-queue: 2.1.0
       sb-scandir: 3.1.0
       shell-escape: 0.2.0
-      ssh2: 1.15.0
+      ssh2: 1.16.0
 
   normalize-path@3.0.0: {}
 
@@ -3622,7 +3625,7 @@ snapshots:
     dependencies:
       through: 2.3.8
 
-  ssh2@1.15.0:
+  ssh2@1.16.0:
     dependencies:
       asn1: 0.2.6
       bcrypt-pbkdf: 1.0.2

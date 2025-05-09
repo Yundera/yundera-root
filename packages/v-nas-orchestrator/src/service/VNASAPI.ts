@@ -1,11 +1,10 @@
 import express from "express";
-import {ScalewayInstanceOperations} from "../providers/scaleway/ScalewayInstanceOperations.js";
 import {authenticate, AuthUserRequest} from "./ExpressAuthenticateMiddleWare.js";
+import {InstanceOperations} from "../providers/InstanceOperations.js";
 
-// Simple in-memory store for job status - consider using Redis or another persistent store for production
 const jobStatusMap = new Map<string, {status: string, result?: any, error?: any}>();
 
-export function vnasAPI(expressApp: express.Application, instanceOperations: ScalewayInstanceOperations) {
+export function vnasAPI(expressApp: express.Application, instanceOperations: InstanceOperations) {
   let router = express.Router();
 
   router.post("/reboot", authenticate, async (req: AuthUserRequest, res) => {
@@ -67,7 +66,7 @@ export function vnasAPI(expressApp: express.Application, instanceOperations: Sca
   router.post("/status", authenticate, async (req: AuthUserRequest, res) => {
     try {
       const uid = req.user.uid;
-      const result = await instanceOperations.status(uid);
+      const result = await instanceOperations.has(uid);
       res.json(result);
     } catch (e) {
       console.log(e);
@@ -75,7 +74,6 @@ export function vnasAPI(expressApp: express.Application, instanceOperations: Sca
     }
   });
 
-  // Modified create endpoint with async processing
   router.post("/create", authenticate, async (req: AuthUserRequest, res) => {
     try {
       const uid = req.user.uid;
@@ -91,7 +89,7 @@ export function vnasAPI(expressApp: express.Application, instanceOperations: Sca
       res.json({ jobId, status: 'processing' });
 
       // Execute the long-running task asynchronously
-      instanceOperations.setup(uid, options)
+      instanceOperations.create(uid, options)
           .then(result => {
             jobStatusMap.set(jobId, { status: 'completed', result });
           })
@@ -106,7 +104,6 @@ export function vnasAPI(expressApp: express.Application, instanceOperations: Sca
     }
   });
 
-  // New endpoint to check job status
   router.get("/job/:jobId", authenticate, async (req: AuthUserRequest, res) => {
     try {
       const { jobId } = req.params;
@@ -138,5 +135,5 @@ export function vnasAPI(expressApp: express.Application, instanceOperations: Sca
     }
   });
 
-  expressApp.use('/vnas/', router);
+  expressApp.use('/pcs/', router);
 }

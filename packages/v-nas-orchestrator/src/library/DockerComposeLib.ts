@@ -1,6 +1,5 @@
 import {promises as fs} from "fs";
 import path from "path";
-import {Options} from "../providers/scaleway/Options.js";
 
 export async function createUserPersoFile(user: {
                                               domain: string,

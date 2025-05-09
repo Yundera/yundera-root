@@ -29,6 +29,7 @@
     "libsodium-wrappers": "^0.7.15",
     "multiformats": "^13.2.2",
     "node-ssh": "^13.2.1",
+    "ssh2": "^1.16.0",
     "typescript": "5.5.4"
   },
   "devDependencies": {

@@ -11,7 +11,16 @@ interface EnvConfig {
     SCW_DEFAULT_PROJECT_ID: string;
     SCW_INSTANCE: string;
     SCW_IMAGE: string;
+
+
+    //VM access key
     SSH_KEY: string;
+    SSH_GATEWAY_KEY: string;
+
+    //proxmox instances
+    YPM_SERVICE_URL: string;
+    YPM_AUTH_TOKEN: string;
+    YPM_TEMPLATE_ID: string;
 
     //mesh router backend for domain providing
     MESH_ROUTER_BACKEND_URL: string;
@@ -31,7 +40,13 @@ export const config: EnvConfig = {
     SCW_DEFAULT_PROJECT_ID: process.env.SCW_DEFAULT_PROJECT_ID,
     SCW_INSTANCE: process.env.SCW_INSTANCE,
     SCW_IMAGE: process.env.SCW_IMAGE,
+
     SSH_KEY: process.env.SSH_KEY,
+    SSH_GATEWAY_KEY: process.env.SSH_GATEWAY_KEY,
+
+    YPM_SERVICE_URL: process.env.YPM_SERVICE_URL,
+    YPM_AUTH_TOKEN: process.env.YPM_AUTH_TOKEN,
+    YPM_TEMPLATE_ID: process.env.YPM_TEMPLATE_ID,
 
     MESH_ROUTER_BACKEND_URL: process.env.MESH_ROUTER_BACKEND_URL,
     MESH_ROUTER_BACKEND_API_KEY: process.env.MESH_ROUTER_BACKEND_API_KEY,

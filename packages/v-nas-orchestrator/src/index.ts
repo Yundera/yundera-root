@@ -2,18 +2,18 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import express from "express";
 
-import { ScalewayInstanceOperations } from "./providers/scaleway/ScalewayInstanceOperations.js";
 import {vnasAPI} from "./service/VNASAPI.js";
 import {initializeFb} from "./firebase/firebaseIntegration.js";
 import {sendEmail} from "./library/Sendgrid.js";
 import {config} from "./EnvConfig.js";
 import {pingAPI} from "./service/pingAPI.js";
+import {ProxmoxInstanceOperations} from "./providers/proxmox/ProxmoxInstanceOperations.js";
 
 const expressApp = express();
 expressApp.use(bodyParser.json());
 expressApp.use(cors());
 
-const instanceOperations = new ScalewayInstanceOperations();
+const instanceOperations = new ProxmoxInstanceOperations();
 
 let port = 8194;
 expressApp.listen(port, async() => {
