@@ -1,3 +1,4 @@
+#!/bin/bash
 #this script is the required setup for a fresh install of Ubuntu 22.04 LTS to create the yundera template
 
 sudo apt-get update
@@ -31,18 +32,3 @@ sudo docker compose version
 sudo docker pull nasselle/mesh-router
 sudo docker pull nasselle/casa-img
 sudo docker pull nasselle/settings-center-app
-
-
-# setup swap
-sudo swapon --show #check if swap is already setup
-sudo fallocate -l 4G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-sudo sh -c 'echo "/swapfile none swap sw 0 0" >> /etc/fstab'
-sudo sysctl vm.swappiness=10
-sudo sh -c 'echo "vm.swappiness=10" >> /etc/sysctl.conf'
-sudo swapon --show
-
-# reboot
-#sudo reboot

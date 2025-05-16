@@ -1,4 +1,5 @@
 FROM node:lts AS base
+RUN apt update && apt install -y inetutils-ping
 
 # install docker https://docs.docker.com/engine/install/ubuntu/
 RUN curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh

@@ -168,7 +168,7 @@ export type TaskStatusResponse =
 export interface CreateVMRequestBody {
     template_vmid: number;
     vm_tier: string;
-    ceph_rbd_name?: string; // Default: "cephrbd"
+    ceph_rbd_name?: string; // Default: "cephpool"
     disk_identifier?: string; // Default: "scsi0"
 }
 

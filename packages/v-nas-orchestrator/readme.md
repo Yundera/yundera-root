@@ -10,11 +10,11 @@ Based on the code provided, the following endpoints are available:
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/vnas/create` | POST | Create a new PCS instance |
-| `/vnas/delete` | POST | Delete a user's PCS instance |
-| `/vnas/reboot` | POST | Reboot a user's PCS instance |
-| `/vnas/status` | POST | Get status of a user's PCS instance |
-| `/vnas/job/:jobId` | GET | Check status of a long-running job |
+| `/pcs/create` | POST | Create a new PCS instance |
+| `/pcs/delete` | POST | Delete a user's PCS instance |
+| `/pcs/reboot` | POST | Reboot a user's PCS instance |
+| `/pcs/status` | POST | Get status of a user's PCS instance |
+| `/pcs/job/:jobId` | GET | Check status of a long-running job |
 
 All endpoints require authentication and use asynchronous processing with job status tracking.
 
@@ -46,7 +46,7 @@ Where `SERVICE_API_KEY` would be replaced with your actual API key, and `uid` wo
 
 - The application uses an in-memory map (`jobStatusMap`) to store job status information
 - Long-running operations (create, delete, reboot) return immediately with a job ID
-- Job status can be checked with the `/vnas/job/:jobId` endpoint
+- Job status can be checked with the `/pcs/job/:jobId` endpoint
 - Jobs are automatically removed from memory 1 hour after completion or failure
 - Jobs are secured by ensuring the requesting user owns the job (checking uid prefix)
 
