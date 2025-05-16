@@ -23,3 +23,6 @@
 [submodule "packages/proxmox-middleware"]
 	path = packages/proxmox-middleware
 	url = https://github.com/Yundera/yundera-proxmox-middleware.git
+[submodule "packages/pcs-orchestrator"]
+	path = packages/pcs-orchestrator
+	url = https://github.com/Yundera/pcs-orchestrator.git
