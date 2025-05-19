@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import {vnasAdminAction, vnasJobStatus} from "./lib/VNASProviders.js";
+import {pcsAdminAction, pcsJobStatus} from "./lib/PCSProviders.js";
 import {getConfig} from "./EnvConfig.js";
 import {sendEmail} from "./lib/Sendgrid.js";
 
@@ -14,8 +14,8 @@ async function jobCompleted(jobId:string,uid:string) {
     return new Promise((resolve, reject) => {
         const poll = async () => {
             try {
-                // Use the original vnasJobStatus function directly
-                const jobStatus = await vnasJobStatus(uid,jobId);
+                // Use the original function directly
+                const jobStatus = await pcsJobStatus(uid,jobId);
 
                 // Handle error in response
                 if (jobStatus.error) {
@@ -48,7 +48,11 @@ async function task() {
         const startTime = new Date();
         console.log(`Running scheduled cleanup at ${startTime.toISOString()}`);
         let uid = getConfig("DEMO_UID");
-        let job = await vnasAdminAction(uid, "create", {
+        let job = await pcsAdminAction(uid, "delete");
+
+        console.log(job);
+        await jobCompleted(job.jobId, uid);
+        job = await pcsAdminAction(uid, "create", {
             'ENVIRONMENT': {
                 "USER": "demo:demodemo"
             }
@@ -67,6 +71,7 @@ async function task() {
             subject: "Demo cleanup completed Error",
             text: `Scheduled cleanup failed: ${error.message}`
         });
+        throw error; //continue the chain
     }
 }
 

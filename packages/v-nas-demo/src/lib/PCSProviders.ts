@@ -20,12 +20,12 @@ const createAuthHeader = (userid: string | string[]) => {
     };
 }
 
-export async function vnasAdminAction(uid: string, action: 'delete' | 'reboot' | 'create' | 'status', options: any = {}): Promise<any> {
+export async function pcsAdminAction(uid: string, action: 'delete' | 'reboot' | 'create' | 'status', options: any = {}): Promise<any> {
     if (!action) {
-        throw new Error("Action is required for VNAS action.");
+        throw new Error("Action is required for PCS action.");
     }
     try {
-        const response = await apiClient.post(`/vnas/${action}`, options, {
+        const response = await apiClient.post(`/pcs/${action}`, options, {
             headers: createAuthHeader(uid)
         });
         if(response.status !== 200) {
@@ -34,18 +34,18 @@ export async function vnasAdminAction(uid: string, action: 'delete' | 'reboot' |
         }
         return response.data;
     } catch (error) {
-        console.error('Error checking domain availability:', error);
+        console.error('Error during pcs action:', error);
         throw error;
     }
 }
 
 // Function to check job status
-export async function vnasJobStatus(uid: string,jobId) {
+export async function pcsJobStatus(uid: string, jobId) {
     if (!jobId) {
         throw new Error("Job ID is required to check status.");
     }
     try {
-        const response = await apiClient.get(`/vnas/job/${jobId}`, {
+        const response = await apiClient.get(`/pcs/job/${jobId}`, {
             headers: createAuthHeader(uid)
         });
         return response.data;
