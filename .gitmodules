@@ -2,26 +2,38 @@
 	path = packages/mesh-router
 	url = https://github.com/worph/meta-router.git
 	branch = main
+
 [submodule "packages/AppStore"]
 	path = packages/AppStore
-	url = https://github.com/worph/AppStore.git
+	url = https://github.com/Yundera/AppStore.git
+	branch = main
+
 [submodule "packages/mesh-dashboard-root"]
 	path = packages/mesh-dashboard-root
 	url = https://github.com/ApteroSAS/mesh-dashboard-root.git
 	branch = main
+
 [submodule "packages/v-nas-dashboard"]
 	path = packages/v-nas-dashboard
 	url = https://github.com/ApteroSAS/v-nas-dashboard.git
 	branch = main
+
 [submodule "packages/settings-center-app"]
 	path = packages/settings-center-app
-	url = https://github.com/ApteroSAS/settings-center-app
+	url = https://github.com/Yundera/settings-center-app
+	branch = main
+
 [submodule "packages/proxmox-middleware"]
 	path = packages/proxmox-middleware
 	url = https://github.com/Yundera/yundera-proxmox-middleware.git
+	branch = main
+
 [submodule "packages/pcs-orchestrator"]
 	path = packages/pcs-orchestrator
 	url = https://github.com/Yundera/pcs-orchestrator.git
+	branch = main
+
 [submodule "packages/casa-img"]
 	path = packages/casa-img
 	url = https://github.com/Yundera/casa-img
+	branch = main
