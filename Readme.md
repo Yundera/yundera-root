@@ -1,71 +1,68 @@
-# Nasselle
-NAS as a service (NaaS). Nasselle helps you setup your own NAS to make it addressable and secure and provide Virtual NAS in the cloud.
+# 🌐 Yundera
 
-# Architecture
-Nasselle (projects meant to be installed on the nasselle server)
-- landing-page
-- user-panel
-- user-panel-backend
-- v-nas-orchestrator
-- mesh-router
+**Personal Cloud Server Platform for Self-Hosting and Data Privacy**
 
-NAS project (project meant to be installed on the NAS/VNAS):
-- casa-img
-- mesh-router
-- datablock-app
+This repository is the monorepo for the Yundera project, it contains the core components and applications that make up the Yundera ecosystem.
 
-Web3 project (project meant for blockchain):
-- XRPL
-- Soroban
+[![Mesh Router](https://github.com/Yundera/mesh-router/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/Yundera/mesh-router/actions/workflows/docker-publish.yml)
+[![Casa-img](https://github.com/Yundera/casa-img/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/Yundera/casa-img/actions/workflows/docker-publish.yml)
+[![Yundera App](https://github.com/Yundera/settings-center-app/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/Yundera/settings-center-app/actions/workflows/docker-publish.yml)
 
-# More on the Web 3 Nasselle
+---
 
-This repository contains the foundational integration for Nasselle with XRP Ledger and XRPL EVM Sidechain.
+## 🎯 What is Yundera?
 
-Nasselle’s Web3 strategy leverages decentralized technologies to empower users with full control over their data and computing resources. Built on the XRP Ledger (XRPL) for fast, low-cost transactions and tokenization, and integrating the XRPL EVM Sidechain for Ethereum-compatible smart contracts, Nasselle delivers automation, rewards, and staking functionality. The project is designed to foster interoperability across blockchains, offering tokenized storage and compute power with secure, decentralized identity (DID) and a transparent ledger for ecosystem interactions.  
+Yundera helps you set up your Personal Cloud Server (PCS), own your data, and easily setup open source apps. From websites like WordPress, AI like Llama or Deepseek, or just data like NextCloud, own your data. We take care of everything in one click: from your domain to security. Perfect for self-hosting and data privacy.
 
+**Key Features:**
+- 🔐 **Data Ownership** - Your data stays private and protected
+- 🚀 **One-Click Setup** - Pre-configured domain, security, routing, and applications
+- 🛠️ **Open Source Applications** - WordPress, Plex, AI models, file sharing, and more
+- 🌍 **Self-Hosting Made Easy** - No technical expertise required
+- 💰 **Cost Control** - Pay for what you use, starting from $24.99/month
 
-## In more details
-We're building Decentralized Cloud Storage and Compute Solutions with XRPL Integration
+---
 
-Nasselle redefines NAS (Network-Attached Storage) by introducing NAS as a Service (NaaS). Leveraging the XRP Ledger (XRPL) and its EVM Sidechain, Nasselle empowers users to securely manage their data, run applications, and access a Virtual NAS in the cloud—all while benefiting from the speed, cost-efficiency, and scalability of decentralized technologies.  
+## 🏗️ Architecture Overview
 
-- What Makes Nasselle Unique?
-Built on XRP Ledger:  
-Nasselle utilizes XRPL for fast, low-cost, and transparent transactions, enabling seamless resource sharing and payments across its ecosystem.
+Yundera operates on a distributed architecture with two main deployment targets:
 
-- Virtual NAS (vNAS):  
-Provides a fully cloud-based NAS solution that eliminates the need for physical hardware, making it accessible, scalable, and secure for anyone.
+### 🖥️ Yundera Server Components
+*Components deployed on the Yundera infrastructure*
 
-- Decentralized Resource Marketplace:  
-Users can tokenize and trade storage or compute resources, creating a dynamic ecosystem driven by XRPL’s efficiency and smart contracts.
+| Component | Description |
+|-----------|-------------|
+| **landing-page** | Public-facing website and marketing portal |
+| **user-panel** | Web-based user management interface |
+| **user-panel-backend** | API backend for user management operations |
+| **v-PCS-orchestrator** | Virtual Personal Cloud Server orchestration engine |
+| **mesh-router** | Network routing and domain management for server infrastructure |
 
-#### Secure and Addressable:
-Combine data sovereignty with advanced encryption to ensure your storage and applications are always safe and accessible.
+### 🏠 Personal Cloud Server (PCS) Components
+*Components deployed on user's personal cloud servers*
 
-- How XRP Enhances Nasselle  
-Low-Cost Transactions: Manage payments for storage and compute power without the high fees associated with traditional cloud providers.
-Smart Contracts: Use XRPL EVM Sidechain for automation, staking, rewards, and marketplace operations.
-Tokenization: Transform storage and compute resources into tradeable tokens, enabling a decentralized economy.
-Interoperability: Bridges with Ethereum and Polygon expand Nasselle’s capabilities and user base.
-Key Features
+| Component | Description |
+|-----------|-------------|
+| **casa-img** | CasaOS containerized environment for application management with automatic subdomain assignment |
+| **mesh-router** | Local network routing and container domain management |
+| **settings-center-app** | Yundera management application for PCS configuration |
 
-#### Personal Cloud with Privacy:
-Host your own secure NAS or leverage Nasselle's Virtual NAS with encrypted access via XRPL.  
-- Incentive Mechanisms:  
-Earn XRP or tokens for contributing resources or participating in the ecosystem.  
-- Scalable and Flexible:  
-Adjust your storage and compute needs dynamically, paying only for what you use.  
-Powered by XRPL  
+---
 
+**Learn More:**
+- 🌐 [Official Website](https://yundera.com)
+- 📚 [Documentation](https://nsl.sh/more)
 
-#### Nasselle integrates cutting-edge XRP technologies, including:
+---
 
-- Automated Market Makers (AMMs): Dynamically price resources in the decentralized marketplace.
-- Ripple Payments: Ensure seamless global payments for subscriptions and services.
-- RLUSD Stablecoin: Provide stable pricing options for users in volatile fiat markets.
+## 🛠️ Development
 
-#### Getting Started
-- Sign Up: Create an account and connect your XRPL wallet.
-- Set Up Your NAS: Use our simple tools to configure your NAS or access the Virtual NAS in the cloud.
-- Explore the Marketplace: Tokenize, trade, or rent storage and compute power with XRP.
+Each component is containerized and automatically built through GitHub Actions. The system uses Docker for deployment and includes comprehensive CI/CD pipelines.
+
+**Technology Stack:**
+- Docker & Docker Compose
+- Mesh networking for distributed routing
+- Container orchestration
+- Automated domain and SSL management
+
+---
