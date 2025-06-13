@@ -48,16 +48,26 @@ async function task() {
         const startTime = new Date();
         console.log(`Running scheduled cleanup at ${startTime.toISOString()}`);
         let uid = getConfig("DEMO_UID");
-        let job = await pcsAdminAction(uid, "delete");
 
-        console.log(job);
-        await jobCompleted(job.jobId, uid);
+        let job;
+
+        try {
+            job = await pcsAdminAction(uid, "delete");
+            console.log(job);
+            await jobCompleted(job.jobId, uid);
+        } catch (e) {
+            /* If the delete job fails, we assume it is because there is no job to delete.*/
+        }
+
+        //don't add sleep here, it should not be needed, but if you run into issues fix the delete method
+
         job = await pcsAdminAction(uid, "create", {
             'ENVIRONMENT': {
                 "USER": "demo:demodemo"
             }
         });
         console.log(job);
+
         await jobCompleted(job.jobId, uid);
         console.log(`Scheduled cleanup completed at ${new Date().toISOString()} execution time: ${(new Date().getTime() - startTime.getTime()) / 1000} seconds`);
         await sendEmail({
