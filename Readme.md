@@ -66,3 +66,7 @@ Each component is containerized and automatically built through GitHub Actions. 
 - Automated domain and SSL management
 
 ---
+
+## 📦 Archuitecture
+
+![overview-diagram](doc/architecture-diagram/yundera-arch.png)
