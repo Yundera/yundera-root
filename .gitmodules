@@ -3,11 +3,6 @@
 	url = https://github.com/worph/meta-router.git
 	branch = main
 
-[submodule "packages/mesh-dashboard-root"]
-	path = packages/mesh-dashboard-root
-	url = https://github.com/ApteroSAS/mesh-dashboard-root.git
-	branch = main
-
 [submodule "packages/v-nas-dashboard"]
 	path = packages/v-nas-dashboard
 	url = https://github.com/ApteroSAS/v-nas-dashboard.git
@@ -31,4 +26,8 @@
 [submodule "packages/casa-img"]
 	path = packages/casa-img
 	url = https://github.com/Yundera/casa-img
+	branch = main
+[submodule "packages/mesh-router-dashboard"]
+	path = packages/mesh-router-dashboard
+	url = https://github.com/ApteroSAS/mesh-dashboard-root.git
 	branch = main
