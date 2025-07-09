@@ -69,4 +69,4 @@ Each component is containerized and automatically built through GitHub Actions. 
 
 ## 📦 Archuitecture
 
-![overview-diagram](doc/architecture-diagram/yundera-arch.png)
+![overview-diagram](doc/architecture/architecture-diagram/yundera-arch.png)
