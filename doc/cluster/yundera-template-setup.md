@@ -124,8 +124,8 @@ rm /tmp/yundera-template.zip
 rm -rf /tmp/template-root-*
 
 # execute the init script
-chmod +x /DATA/AppData/casaos/apps/yundera/scripts/os-init/os-init.sh
-/DATA/AppData/casaos/apps/yundera/scripts/os-init/os-init.sh
+chmod +x /DATA/AppData/casaos/apps/yundera/scripts/template-init.sh
+/DATA/AppData/casaos/apps/yundera/scripts/template-init.sh
 ```
 
 ## Finalize Template
