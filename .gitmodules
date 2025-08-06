@@ -31,3 +31,6 @@
 	path = packages/mesh-router-dashboard
 	url = https://github.com/ApteroSAS/mesh-dashboard-root.git
 	branch = main
+[submodule "packages/template-root"]
+	path = packages/template-root
+	url = https://github.com/Yundera/template-root.git
