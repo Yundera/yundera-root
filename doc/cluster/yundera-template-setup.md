@@ -114,7 +114,8 @@ mkdir -p /DATA/AppData/casaos/apps/yundera
 # https://github.com/Yundera/template-root/archive/refs/tags/v1.1.0.zip
 
 # Download the zip file (choose main or stable version)
-wget https://github.com/Yundera/template-root/archive/refs/heads/main.zip -O /tmp/yundera-template.zip
+wget https://github.com/Yundera/template-root/archive/refs/heads/stable.zip -O /tmp/yundera-template.zip
+#wget https://github.com/Yundera/template-root/archive/refs/heads/main.zip -O /tmp/yundera-template.zip
 # wget https://github.com/Yundera/template-root/archive/refs/tags/v1.1.0.zip -O /tmp/yundera-template.zip
 
 # Extract, copy, and cleanup
@@ -131,10 +132,11 @@ chmod +x /DATA/AppData/casaos/apps/yundera/scripts/template-init.sh
 ## Finalize Template
 
 1. **Convert VM to Template:**
-   Convert the configured VM to a template in Proxmox VE
+   Shutdown and Convert the configured VM to a template in Proxmox VE
 
 2. **Update PCS Orchestrator:**
-   Update the template ID in the PCS Orchestrator configuration
+   Update the template ID (YPM_TEMPLATE_ID) in the PCS Orchestrator configuration (.env)
+   restart the PCS Orchestrator service to apply changes.
    Ensure the new template is available for deployment
 
 ## Verification
