@@ -4,3 +4,4 @@ packages/soroban/.idea/
 node_modules
 .idea
 *.env
+CLAUDE.md

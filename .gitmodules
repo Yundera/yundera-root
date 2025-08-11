@@ -34,3 +34,6 @@
 [submodule "packages/template-root"]
 	path = packages/template-root
 	url = https://github.com/Yundera/template-root.git
+[submodule "doc"]
+	path = doc
+	url = https://github.com/Yundera/yundera-root-documentation.git
