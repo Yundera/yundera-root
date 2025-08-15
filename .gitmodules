@@ -3,11 +3,6 @@
 	url = https://github.com/worph/meta-router.git
 	branch = main
 
-[submodule "packages/v-nas-dashboard"]
-	path = packages/v-nas-dashboard
-	url = https://github.com/ApteroSAS/v-nas-dashboard.git
-	branch = main
-
 [submodule "packages/settings-center-app"]
 	path = packages/settings-center-app
 	url = https://github.com/Yundera/settings-center-app
@@ -31,9 +26,10 @@
 	path = packages/mesh-router-dashboard
 	url = https://github.com/ApteroSAS/mesh-dashboard-root.git
 	branch = main
-[submodule "packages/template-root"]
-	path = packages/template-root
-	url = https://github.com/Yundera/template-root.git
 [submodule "doc"]
 	path = doc
 	url = https://github.com/Yundera/yundera-root-documentation.git
+[submodule "packages/pcs-dashboard"]
+	path = packages/pcs-dashboard
+	url = https://github.com/Yundera/pcs-dashboard
+	branch = main
