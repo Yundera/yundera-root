@@ -10,36 +10,33 @@ import {sendEmail} from "./lib/Sendgrid.js";
  * @param uid
  * @returns {Promise} - Resolves with job result or rejects with error
  */
-async function jobCompleted(jobId:string,uid:string) {
-    return new Promise((resolve, reject) => {
-        const poll = async () => {
-            try {
-                // Use the original function directly
-                const jobStatus = await pcsJobStatus(uid,jobId);
+async function jobCompleted(jobId: string, uid: string) {
+    console.log(`Polling job ${jobId} for completion...`);
+    while (true) {
+        // Use the original function directly
+        const jobStatus = await pcsJobStatus(uid, jobId);
 
-                // Handle error in response
-                if (jobStatus.error) {
-                    reject(new Error(jobStatus.error));
-                    return;
-                }
+        // Handle error in response
+        if (jobStatus.error) {
+            throw new Error(jobStatus.error);
+        }
 
-                // Check completion status
-                if (jobStatus.status === 'completed') {
-                    resolve(jobStatus);
-                } else if (jobStatus.status === 'failed') {
-                    reject(new Error(jobStatus.error || 'Job failed'));
-                } else {
-                    // Continue polling after 1 second
-                    setTimeout(poll, 1000);
-                }
-            } catch (error) {
-                reject(error);
-            }
-        };
-
-        // Start polling
-        poll();
-    });
+        // Check completion status
+        if (jobStatus.status === 'completed') {
+            console.log(`Job ${jobId} completed successfully.`);
+            return jobStatus;
+        } else if (jobStatus.status === 'failed') {
+            console.log(jobStatus.error);
+            throw new Error(jobStatus.error || 'Job failed');
+        } else if (jobStatus.status === 'processing'){
+            // Continue polling after 1 second
+            console.log(`Job ${jobId} status: ${jobStatus.status}. Polling...`);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        } else {
+            console.log(jobStatus);
+            throw new Error(`invalid job state`);
+        }
+    }
 }
 
 
@@ -53,31 +50,26 @@ async function task() {
 
         try {
             job = await pcsAdminAction(uid, "delete");
-            console.log(job);
             await jobCompleted(job.jobId, uid);
         } catch (e) {
             /* If the delete job fails, we assume it is because there is no job to delete.*/
         }
-
         //don't add sleep here, it should not be needed, but if you run into issues fix the delete method
-
         job = await pcsAdminAction(uid, "create", {
             'ENVIRONMENT': {
                 "USER": "demo:demodemo"
             }
         });
-        console.log(job);
-
         await jobCompleted(job.jobId, uid);
         console.log(`Scheduled cleanup completed at ${new Date().toISOString()} execution time: ${(new Date().getTime() - startTime.getTime()) / 1000} seconds`);
         await sendEmail({
-            to:getConfig("SENDMAIL_FROM_EMAIL"),
+            to: getConfig("SENDMAIL_FROM_EMAIL"),
             subject: "Demo cleanup completed successful",
             text: `Demo cleanup completed successfully execution time: ${(new Date().getTime() - startTime.getTime()) / 1000} seconds`
         });
-    }catch (error) {
+    } catch (error) {
         await sendEmail({
-            to:getConfig("SENDMAIL_FROM_EMAIL"),
+            to: getConfig("SENDMAIL_FROM_EMAIL"),
             subject: "Demo cleanup completed Error",
             text: `Scheduled cleanup failed: ${error.message}`
         });

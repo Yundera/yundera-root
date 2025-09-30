@@ -5,6 +5,12 @@ import {getConfig} from "../EnvConfig.js";
 const apiBase = getConfig("VNAS_BACKEND");
 const backendKey = getConfig("VNAS_SERVICE_API_KEY");
 
+interface JobStatus {
+    status: 'processing' | 'completed' | 'failed';
+    result?: any;
+    error?: any;
+}
+
 
 // Create an Axios instance
 const apiClient = axios.create({
@@ -40,7 +46,7 @@ export async function pcsAdminAction(uid: string, action: 'delete' | 'reboot' | 
 }
 
 // Function to check job status
-export async function pcsJobStatus(uid: string, jobId) {
+export async function pcsJobStatus(uid: string, jobId):Promise<JobStatus> {
     if (!jobId) {
         throw new Error("Job ID is required to check status.");
     }
