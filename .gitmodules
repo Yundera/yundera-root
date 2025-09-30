@@ -33,3 +33,6 @@
 	path = packages/pcs-dashboard
 	url = https://github.com/Yundera/pcs-dashboard
 	branch = main
+[submodule "packages/demo"]
+	path = packages/demo
+	url = https://github.com/Yundera/demo.git
