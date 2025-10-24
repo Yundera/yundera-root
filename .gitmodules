@@ -36,3 +36,6 @@
 [submodule "packages/demo"]
 	path = packages/demo
 	url = https://github.com/Yundera/demo.git
+[submodule "packages/yundera-smtp-handler"]
+	path = packages/yundera-smtp-handler
+	url = https://github.com/Yundera/yundera-smtp-handler.git
