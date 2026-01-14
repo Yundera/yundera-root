@@ -1,5 +1,4 @@
 import cors from "cors";
-import bodyParser from "body-parser";
 import express from "express";
 import { initializeFb } from "../firebase/firebaseIntegration.js";
 import { routerAPI } from "../services/RouterAPI.js";
@@ -17,7 +16,7 @@ export function createTestApp(): express.Application {
   }
 
   const app = express();
-  app.use(bodyParser.json());
+  app.use(express.json());
   app.use(cors());
 
   routerAPI(app);

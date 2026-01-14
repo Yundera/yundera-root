@@ -37,7 +37,14 @@ export function routerAPI(expressApp: express.Application) {
       const userData = await getUserDomain(userid);
 
       if (userData) {
-        const isValid = await verifySignature(userData.publicKey, sig, userid);
+        let isValid = false;
+        try {
+          isValid = await verifySignature(userData.publicKey, sig, userid);
+        } catch (e) {
+          // Invalid signature format (e.g., non-base36 characters)
+          console.log('Invalid signature format for verify', { userid, error: e.message });
+          return res.json({ valid: false });
+        }
         console.log('Verifying signature for', req.params, isValid);
 
         if (isValid) {
@@ -46,13 +53,13 @@ export function routerAPI(expressApp: express.Application) {
             domainName: userData.domainName
           });
         } else {
-          res.json("" + isValid);
+          res.json({ valid: false });
         }
       } else {
-        res.json({err: "unknown user"});
+        res.json({ error: "unknown user" });
       }
     } catch (error) {
-      res.json({err: error.toString()});
+      res.json({ error: error.toString() });
     }
   });
 
@@ -85,14 +92,18 @@ export function routerAPI(expressApp: express.Application) {
    * Requires authentication.
    */
   router.post('/domain', authenticate, async (req: AuthUserRequest, res) => {
-    const { domainName, serverDomain = "nsl.sh", publicKey } = req.body;
+    const { domainName, serverDomain, publicKey } = req.body ?? {};
 
     try {
-      if (!domainName && !serverDomain && !publicKey) {
-        return res.status(400).json({ error: "At least one of 'domainName', 'serverDomain', or 'publicKey' must be provided." });
+      if (!domainName && !publicKey) {
+        return res.status(400).json({ error: "At least 'domainName' or 'publicKey' must be provided." });
       }
 
-      await updateUserDomain(req.user.uid, { domainName, serverDomain, publicKey });
+      await updateUserDomain(req.user.uid, {
+        domainName,
+        serverDomain: serverDomain || "nsl.sh",
+        publicKey
+      });
       return res.status(200).json({ message: "Domain information updated successfully." });
     } catch (error) {
       console.error("Error in POST /domain", error);

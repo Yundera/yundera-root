@@ -21,21 +21,13 @@ function validateDomainName(domain: string): { isValid: boolean; message: string
     return { isValid: false, message: "Domain name cannot be longer than 63 characters." };
   }
 
-  // Check if domain contains only valid characters (letters and numbers)
+  // Check if domain contains only valid characters (lowercase letters and numbers)
+  // This regex implicitly ensures the first character is also a letter or number
   const validCharRegex = /^[a-z0-9]+$/;
   if (!validCharRegex.test(domain)) {
     return {
       isValid: false,
-      message: "Domain name can only contain letters and numbers."
-    };
-  }
-
-  // Check if first character is a letter or number
-  const firstCharRegex = /^[a-z0-9]/;
-  if (!firstCharRegex.test(domain)) {
-    return {
-      isValid: false,
-      message: "Domain name must start with a letter or number."
+      message: "Domain name can only contain lowercase letters and numbers."
     };
   }
 
@@ -169,17 +161,67 @@ export async function deleteUserDomain(userId: string): Promise<void> {
 }
 
 /**
+ * Validates an IPv4 address.
+ * @param ip - The IP address to validate
+ * @returns true if valid IPv4, false otherwise
+ */
+function isValidIPv4(ip: string): boolean {
+  const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  return ipv4Regex.test(ip);
+}
+
+/**
+ * Validates an IPv6 address.
+ * Handles full, compressed (::), and mixed IPv4 formats.
+ * @param ip - The IP address to validate
+ * @returns true if valid IPv6, false otherwise
+ */
+function isValidIPv6(ip: string): boolean {
+  // Check for valid hex characters and colons only
+  if (!/^[0-9a-fA-F:]+$/.test(ip) && !/^[0-9a-fA-F:.]+$/.test(ip)) {
+    return false;
+  }
+
+  // Handle :: compression - can only appear once
+  const doubleColonCount = (ip.match(/::/g) || []).length;
+  if (doubleColonCount > 1) {
+    return false;
+  }
+
+  // Split by :: to handle compressed format
+  if (ip.includes('::')) {
+    const parts = ip.split('::');
+    const left = parts[0] ? parts[0].split(':') : [];
+    const right = parts[1] ? parts[1].split(':') : [];
+
+    // Total groups must be <= 8
+    if (left.length + right.length > 7) {
+      return false;
+    }
+
+    // Validate each group
+    const allGroups = [...left, ...right];
+    return allGroups.every(group =>
+      group === '' || (/^[0-9a-fA-F]{1,4}$/.test(group))
+    );
+  }
+
+  // No compression - must have exactly 8 groups
+  const groups = ip.split(':');
+  if (groups.length !== 8) {
+    return false;
+  }
+
+  return groups.every(group => /^[0-9a-fA-F]{1,4}$/.test(group));
+}
+
+/**
  * Validates an IP address (IPv4 or IPv6).
  * @param ip - The IP address to validate
  * @returns true if valid, false otherwise
  */
 function isValidIpAddress(ip: string): boolean {
-  // IPv4 pattern
-  const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-  // IPv6 pattern (simplified - covers most common formats)
-  const ipv6Regex = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}$|^(?:[0-9a-fA-F]{1,4}:){1,7}:$|^(?:[0-9a-fA-F]{1,4}:){0,6}::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}$/;
-
-  return ipv4Regex.test(ip) || ipv6Regex.test(ip);
+  return isValidIPv4(ip) || isValidIPv6(ip);
 }
 
 /**

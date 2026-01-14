@@ -98,7 +98,7 @@ describe("IP Registration API", () => {
     });
 
     it("should reject non-existent user", async () => {
-      const fakeUserId = "non-existent-user-12345";
+      const fakeUserId = "nonexistentuser12345";
       const signature = await signMessage(testKeys.privateKey, fakeUserId);
 
       const response = await request(app)
@@ -109,7 +109,7 @@ describe("IP Registration API", () => {
       expect(response.body.error).to.equal("User not found. Register a domain first.");
     });
 
-    it("should accept valid IPv6 address", async () => {
+    it("should accept valid full IPv6 address", async () => {
       const vpnIpv6 = "2001:0db8:85a3:0000:0000:8a2e:0370:7334";
       const signature = await signMessage(testKeys.privateKey, testUserId);
 
@@ -119,6 +119,54 @@ describe("IP Registration API", () => {
         .expect(200);
 
       expect(response.body.vpnIp).to.equal(vpnIpv6);
+    });
+
+    it("should accept compressed IPv6 address (::1)", async () => {
+      const vpnIpv6 = "::1";
+      const signature = await signMessage(testKeys.privateKey, testUserId);
+
+      const response = await request(app)
+        .post(`/ip/${testUserId}/${signature}`)
+        .send({ vpnIp: vpnIpv6 })
+        .expect(200);
+
+      expect(response.body.vpnIp).to.equal(vpnIpv6);
+    });
+
+    it("should accept compressed IPv6 address (fe80::1)", async () => {
+      const vpnIpv6 = "fe80::1";
+      const signature = await signMessage(testKeys.privateKey, testUserId);
+
+      const response = await request(app)
+        .post(`/ip/${testUserId}/${signature}`)
+        .send({ vpnIp: vpnIpv6 })
+        .expect(200);
+
+      expect(response.body.vpnIp).to.equal(vpnIpv6);
+    });
+
+    it("should accept compressed IPv6 address (2001:db8::)", async () => {
+      const vpnIpv6 = "2001:db8::";
+      const signature = await signMessage(testKeys.privateKey, testUserId);
+
+      const response = await request(app)
+        .post(`/ip/${testUserId}/${signature}`)
+        .send({ vpnIp: vpnIpv6 })
+        .expect(200);
+
+      expect(response.body.vpnIp).to.equal(vpnIpv6);
+    });
+
+    it("should reject invalid IPv6 with multiple ::", async () => {
+      const invalidIpv6 = "2001::db8::1";
+      const signature = await signMessage(testKeys.privateKey, testUserId);
+
+      const response = await request(app)
+        .post(`/ip/${testUserId}/${signature}`)
+        .send({ vpnIp: invalidIpv6 })
+        .expect(500);
+
+      expect(response.body.error).to.include("Invalid IP address format");
     });
 
     it("should update existing IP with new value", async () => {
@@ -205,6 +253,129 @@ describe("IP Registration API", () => {
         .expect(200);
 
       expect(response.body.vpnIp).to.equal(vpnIp);
+    });
+  });
+
+  describe("GET /available/:domain", () => {
+    it("should return available for unused domain", async () => {
+      const unusedDomain = "unuseddomain12345";
+
+      const response = await request(app)
+        .get(`/available/${unusedDomain}`)
+        .expect(200);
+
+      expect(response.body.available).to.equal(true);
+      expect(response.body.message).to.equal("Domain name is available.");
+    });
+
+    it("should return unavailable for existing domain", async () => {
+      // testUserId is also the domainName
+      const domainName = testUserId;
+
+      const response = await request(app)
+        .get(`/available/${domainName}`)
+        .expect(209); // Note: Using existing status code behavior
+
+      expect(response.body.available).to.equal(false);
+    });
+
+    it("should return unavailable for reserved domains", async () => {
+      const response = await request(app)
+        .get("/available/root")
+        .expect(209);
+
+      expect(response.body.available).to.equal(false);
+      expect(response.body.message).to.equal("Domain name is not available.");
+    });
+
+    it("should return unavailable for www reserved domain", async () => {
+      const response = await request(app)
+        .get("/available/www")
+        .expect(209);
+
+      expect(response.body.available).to.equal(false);
+    });
+
+    it("should reject invalid domain names", async () => {
+      const response = await request(app)
+        .get("/available/invalid-domain")
+        .expect(209);
+
+      expect(response.body.available).to.equal(false);
+      expect(response.body.message).to.include("lowercase letters and numbers");
+    });
+
+    it("should reject domains with uppercase", async () => {
+      const response = await request(app)
+        .get("/available/InvalidDomain")
+        .expect(209);
+
+      expect(response.body.available).to.equal(false);
+    });
+
+    it("should reject domains longer than 63 characters", async () => {
+      const longDomain = "a".repeat(64);
+
+      const response = await request(app)
+        .get(`/available/${longDomain}`)
+        .expect(209);
+
+      expect(response.body.available).to.equal(false);
+      expect(response.body.message).to.include("63 characters");
+    });
+  });
+
+  describe("GET /domain/:userid", () => {
+    it("should return domain info for existing user", async () => {
+      const response = await request(app)
+        .get(`/domain/${testUserId}`)
+        .expect(200);
+
+      expect(response.body.domainName).to.equal(testUserId);
+      expect(response.body.serverDomain).to.equal("nsl.sh");
+      expect(response.body.publicKey).to.equal(testKeys.publicKey);
+    });
+
+    it("should return 280 for non-existent user", async () => {
+      // Note: Using existing status code behavior (280 is non-standard)
+      const response = await request(app)
+        .get("/domain/nonexistentuser12345")
+        .expect(280);
+
+      expect(response.body.error).to.equal("User not found.");
+    });
+  });
+
+  describe("GET /verify/:userid/:sig", () => {
+    it("should return domain info for valid signature", async () => {
+      const signature = await signMessage(testKeys.privateKey, testUserId);
+
+      const response = await request(app)
+        .get(`/verify/${testUserId}/${signature}`)
+        .expect(200);
+
+      expect(response.body.domainName).to.equal(testUserId);
+      expect(response.body.serverDomain).to.equal("nsl.sh");
+    });
+
+    it("should return valid: false for invalid signature", async () => {
+      const invalidSignature = "k1234567890invalidSignature";
+
+      const response = await request(app)
+        .get(`/verify/${testUserId}/${invalidSignature}`)
+        .expect(200);
+
+      expect(response.body.valid).to.equal(false);
+    });
+
+    it("should return error for unknown user", async () => {
+      const signature = await signMessage(testKeys.privateKey, "unknownuser12345");
+
+      const response = await request(app)
+        .get(`/verify/unknownuser12345/${signature}`)
+        .expect(200);
+
+      expect(response.body.error).to.equal("unknown user");
     });
   });
 });

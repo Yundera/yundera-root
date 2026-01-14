@@ -15,15 +15,3 @@ export interface NSLRouterData {
     lastupdate?: string;
     updatedby?: string;
 }
-
-export const EXTERNAL_ID_COLLECTION = "external-id";
-export interface NSLExternalIdData {
-    externalId: string;
-
-    //meta
-    id?: string;
-    createdate?: string;
-    createdby?: string;
-    lastupdate?: string;
-    updatedby?: string;
-}
