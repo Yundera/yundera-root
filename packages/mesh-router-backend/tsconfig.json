@@ -11,7 +11,7 @@
     "resolveJsonModule": true,
     "moduleResolution": "NodeNext",
     "baseUrl": "." /* Base directory to resolve non-absolute module names. */,
-    "types" : ["node", "express"],
+    "types" : ["node", "express", "mocha"],
     "typeRoots": ["@types", "node_modules/@types"]
   },
   "include": [

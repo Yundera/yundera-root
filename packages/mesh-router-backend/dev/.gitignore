@@ -1,0 +1,6 @@
+# Environment files (contain secrets)
+.env
+serviceAccount.json
+
+# Keep examples
+!.env.example

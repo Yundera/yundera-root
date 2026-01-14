@@ -4,6 +4,10 @@ export interface NSLRouterData {
     domainName: string;
     publicKey: string;
 
+    // VPN IP assigned to this user's PCS instance
+    vpnIp?: string;
+    vpnIpUpdatedAt?: string;
+
     //meta
     id?: string;
     createdate?: string;

@@ -167,3 +167,72 @@ export async function deleteUserDomain(userId: string): Promise<void> {
 
   await admin.firestore().collection(NSL_ROUTER_COLLECTION).doc(userId).delete();
 }
+
+/**
+ * Validates an IP address (IPv4 or IPv6).
+ * @param ip - The IP address to validate
+ * @returns true if valid, false otherwise
+ */
+function isValidIpAddress(ip: string): boolean {
+  // IPv4 pattern
+  const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  // IPv6 pattern (simplified - covers most common formats)
+  const ipv6Regex = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}$|^(?:[0-9a-fA-F]{1,4}:){1,7}:$|^(?:[0-9a-fA-F]{1,4}:){0,6}::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}$/;
+
+  return ipv4Regex.test(ip) || ipv6Regex.test(ip);
+}
+
+/**
+ * Registers or updates the VPN IP for a user.
+ * User must already have a domain registered.
+ * @param userId - The user ID
+ * @param vpnIp - The VPN IP address to register
+ */
+export async function registerVpnIp(userId: string, vpnIp: string): Promise<void> {
+  if (!userId) {
+    throw new Error("User ID is required.");
+  }
+
+  if (!vpnIp) {
+    throw new Error("VPN IP is required.");
+  }
+
+  if (!isValidIpAddress(vpnIp)) {
+    throw new Error("Invalid IP address format.");
+  }
+
+  // Check that user has a domain registered
+  const userData = await getUserDomain(userId);
+  if (!userData) {
+    throw new Error("User must have a domain registered before setting VPN IP.");
+  }
+
+  const userDocRef = admin.firestore().collection(NSL_ROUTER_COLLECTION).doc(userId);
+  await userDocRef.update({
+    vpnIp: vpnIp,
+    vpnIpUpdatedAt: new Date().toISOString()
+  });
+}
+
+/**
+ * Resolves a domain name to its VPN IP address.
+ * @param domainName - The subdomain part (e.g., "alice" for alice.nsl.sh)
+ * @returns The VPN IP if found, null otherwise
+ */
+export async function resolveDomainToIp(domainName: string): Promise<{ vpnIp: string; domainName: string; serverDomain: string } | null> {
+  if (!domainName) {
+    throw new Error("Domain name is required.");
+  }
+
+  const domainData = await getDomain(domainName);
+
+  if (!domainData || !domainData.domain.vpnIp) {
+    return null;
+  }
+
+  return {
+    vpnIp: domainData.domain.vpnIp,
+    domainName: domainData.domain.domainName,
+    serverDomain: domainData.domain.serverDomain
+  };
+}

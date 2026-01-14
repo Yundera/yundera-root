@@ -1,0 +1,41 @@
+services:
+  mesh-router-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: mesh-router-backend-dev
+    ports:
+      - "8192:8192"
+    volumes:
+      # Mount source code (parent directory)
+      - ..:/app
+
+      # Named volume for node_modules (performance on Windows/Mac)
+      - node_modules:/app/node_modules
+
+      # Named volume for pnpm store
+      - pnpm-store:/pnpm/store
+
+      # Mount entrypoint script
+      - ./entrypoint-dev.sh:/entrypoint-dev.sh:ro
+
+      # Mount config directory (contains serviceAccount.json if present)
+      - ../config:/app/config:ro
+    environment:
+      - NODE_ENV=development
+      # Firebase config - uses config from parent directory
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/config/serviceAccount.json
+    env_file:
+      - path: .env
+        required: false
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8192/available/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  node_modules:
+  pnpm-store:
