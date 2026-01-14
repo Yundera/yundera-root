@@ -42,6 +42,6 @@
 [submodule "packages/mesh-router-backend"]
 	path = packages/mesh-router-backend
 	url = https://github.com/Yundera/mesh-router-backend.git
-[submodule "pacakges/mesh-router-agent"]
-	path = pacakges/mesh-router-agent
+[submodule "packages/mesh-router-agent"]
+	path = packages/mesh-router-agent
 	url = https://github.com/worph/mesh-router-agent.git
