@@ -8,3 +8,4 @@ CLAUDE.md
 .claude/settings.local.json
 packages/mesh-router-backend/.pnpm-store/*
 /packages/mesh-router-dashboard/dev/config/
+/packages/mesh-router-dashboard/dev/local-stack-sandbox/
