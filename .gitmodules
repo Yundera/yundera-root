@@ -43,3 +43,6 @@
 [submodule "packages/mesh-router-tunnel"]
 	path = packages/mesh-router-tunnel
 	url = https://github.com/Yundera/mesh-router-tunnel.git
+[submodule "packages/mesh-router-gateway"]
+	path = packages/mesh-router-gateway
+	url = https://github.com/Yundera/mesh-router-gateway.git
