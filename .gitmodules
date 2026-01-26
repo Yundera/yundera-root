@@ -17,10 +17,6 @@
 	path = packages/casa-img
 	url = https://github.com/Yundera/casa-img
 	branch = main
-[submodule "packages/mesh-router-dashboard"]
-	path = packages/mesh-router-dashboard
-	url = https://github.com/ApteroSAS/mesh-dashboard-root.git
-	branch = main
 [submodule "doc"]
 	path = doc
 	url = https://github.com/Yundera/yundera-root-documentation.git
@@ -34,15 +30,3 @@
 [submodule "packages/yundera-smtp-handler"]
 	path = packages/yundera-smtp-handler
 	url = https://github.com/Yundera/yundera-smtp-handler.git
-[submodule "packages/mesh-router-backend"]
-	path = packages/mesh-router-backend
-	url = https://github.com/Yundera/mesh-router-backend.git
-[submodule "packages/mesh-router-agent"]
-	path = packages/mesh-router-agent
-	url = https://github.com/worph/mesh-router-agent.git
-[submodule "packages/mesh-router-tunnel"]
-	path = packages/mesh-router-tunnel
-	url = https://github.com/Yundera/mesh-router-tunnel.git
-[submodule "packages/mesh-router-gateway"]
-	path = packages/mesh-router-gateway
-	url = https://github.com/Yundera/mesh-router-gateway.git
