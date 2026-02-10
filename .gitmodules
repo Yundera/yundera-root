@@ -30,3 +30,9 @@
 [submodule "packages/yundera-smtp-handler"]
 	path = packages/yundera-smtp-handler
 	url = https://github.com/Yundera/yundera-smtp-handler.git
+[submodule "packages/template-root"]
+	path = packages/template-root
+	url = https://github.com/Yundera/template-root.git
+[submodule "packages/mesh-router-root"]
+	path = packages/mesh-router-root
+	url = https://github.com/Yundera/mesh-router-root.git
