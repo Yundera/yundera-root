@@ -33,3 +33,6 @@
 [submodule "packages/mesh-router-root"]
 	path = packages/mesh-router-root
 	url = https://github.com/Yundera/mesh-router-root.git
+[submodule "packages/casaos-oidc-bridge"]
+	path = packages/casaos-oidc-bridge
+	url = https://github.com/Yundera/casaos-oidc-bridge.git
