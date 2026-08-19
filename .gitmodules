@@ -13,10 +13,6 @@
 	url = https://github.com/Yundera/pcs-orchestrator.git
 	branch = main
 
-[submodule "packages/casa-img"]
-	path = packages/casa-img
-	url = https://github.com/Yundera/casa-img
-	branch = main
 [submodule "doc"]
 	path = doc
 	url = https://github.com/Yundera/yundera-root-documentation.git

@@ -14,7 +14,6 @@ Connect your apps, keep control of your data, reduce SaaS costs, and build AI wo
 This repository is the monorepo for the Yundera project, it contains the core components and applications that make up the Yundera ecosystem.
 
 [![Mesh Router](https://github.com/Yundera/mesh-router-root/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/Yundera/mesh-router-root/actions/workflows/docker-publish.yml)
-[![Casa-img](https://github.com/Yundera/casa-img/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/Yundera/casa-img/actions/workflows/docker-publish.yml)
 [![Settings Center App](https://github.com/Yundera/settings-center-app/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/Yundera/settings-center-app/actions/workflows/docker-publish.yml)
 
 ---
@@ -91,7 +90,6 @@ Yundera is split across two deployment tiers: shared Yundera infrastructure, and
 
 | Component | Path | Role |
 |---|---|---|
-| **casa-img** | [`packages/casa-img`](./packages/casa-img) | Custom CasaOS distribution — manages installed apps and assigns subdomains automatically |
 | **mesh-router** (local) | [`packages/mesh-router-root`](./packages/mesh-router-root) | Local SSL termination, domain routing, WireGuard tunnels to other PCS |
 | **settings-center-app** | [`packages/settings-center-app`](./packages/settings-center-app) | Admin dashboard shipped inside each PCS (SSH, Docker Compose, health checks) |
 | **pcs-dashboard** | [`packages/pcs-dashboard`](./packages/pcs-dashboard) | User-facing PCS dashboard UI |
