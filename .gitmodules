@@ -35,3 +35,6 @@
 [submodule "packages/contabo-middleware"]
 	path = packages/contabo-middleware
 	url = https://github.com/Yundera/contabo-middleware.git
+[submodule "packages/files"]
+	path = packages/files
+	url = https://github.com/Yundera/files.git
