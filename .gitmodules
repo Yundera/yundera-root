@@ -32,3 +32,6 @@
 [submodule "packages/contabo-middleware"]
 	path = packages/contabo-middleware
 	url = https://github.com/Yundera/contabo-middleware.git
+[submodule "packages/maison-kopia-engine"]
+	path = packages/maison-kopia-engine
+	url = https://github.com/Yundera/maison-kopia-engine.git
