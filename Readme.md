@@ -97,6 +97,12 @@ Yundera is split across two deployment tiers: shared Yundera infrastructure, and
 
 Most `packages/*` entries are independent git submodules — clone with `--recursive`, and see [CLAUDE.md](./CLAUDE.md) for the submodule workflow and per-package build commands.
 
+> **Submodule pointers here are bookmarks, not releases.** This repository only lists the projects
+> to clone; a submodule pointer that lags its repository's `main` (or a tag) is expected and harmless.
+> Nothing ships from these pointers: each component is released from its own repository, so after
+> committing in a submodule there is no need to bump it here. `git submodule update --remote` brings
+> every checkout to its upstream tip.
+
 ---
 
 **Learn More:**
