@@ -28,7 +28,7 @@
 	url = https://github.com/Yundera/template-root.git
 [submodule "packages/mesh-router-root"]
 	path = packages/mesh-router-root
-	url = https://github.com/Yundera/mesh-router-root.git
+	url = https://github.com/NSL-SH/mesh-router-root.git
 [submodule "packages/contabo-middleware"]
 	path = packages/contabo-middleware
 	url = https://github.com/Yundera/contabo-middleware.git
